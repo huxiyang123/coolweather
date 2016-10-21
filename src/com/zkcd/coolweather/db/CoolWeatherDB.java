@@ -86,7 +86,7 @@ public class CoolWeatherDB {
         return list;
     }
 
-    public void saveCity(City city) {
+    public void saveCities(City city) {
         if (city != null) {
             ContentValues values = new ContentValues();
             values.put("city_name", city.getCityName());
