@@ -1,5 +1,6 @@
 package com.zkcd.coolweather.model;
 
+
 public class Province {
     private int id;
     private String provinceName;
