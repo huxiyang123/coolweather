@@ -17,9 +17,9 @@ public class Utility {
      *            数据库对象
      * @return
      */
-    public synchronized static boolean handlerProvinceResponce(CoolWeatherDB coolWeatherDB, String responce) {
-        if (!TextUtils.isEmpty(responce)) {
-            String[] allProvince = responce.split(",");
+    public synchronized static boolean handlerProvinceResponce(CoolWeatherDB coolWeatherDB, String response) {
+        if (!TextUtils.isEmpty(response)) {
+            String[] allProvince = response.split(",");
             if (allProvince != null && allProvince.length > 0) {
                 for (String prov : allProvince) {
                     String[] signalProv = prov.split("\\|");
@@ -34,9 +34,9 @@ public class Utility {
         return false;
     }
 
-    public synchronized static boolean handlerCitiesResponce(CoolWeatherDB coolWeatherDB, String responce, int provinceId) {
-        if (!TextUtils.isEmpty(responce)) {
-            String[] allCities = responce.split(",");
+    public synchronized static boolean handlerCitiesResponce(CoolWeatherDB coolWeatherDB, String response, int provinceId) {
+        if (!TextUtils.isEmpty(response)) {
+            String[] allCities = response.split(",");
             if (allCities != null && allCities.length > 0) {
                 for (String cit : allCities) {
                     String[] signalCity = cit.split("\\|");
@@ -52,9 +52,9 @@ public class Utility {
         return false;
     }
     
-    public synchronized static boolean handlerCountiesResponce(CoolWeatherDB coolWeatherDB, String responce, int cityId) {
-        if (!TextUtils.isEmpty(responce)) {
-            String[] allCounties = responce.split(",");
+    public synchronized static boolean handlerCountiesResponce(CoolWeatherDB coolWeatherDB, String response, int cityId) {
+        if (!TextUtils.isEmpty(response)) {
+            String[] allCounties = response.split(",");
             if (allCounties != null && allCounties.length > 0) {
                 for (String coun : allCounties) {
                     String[] signalCounty = coun.split("\\|");
