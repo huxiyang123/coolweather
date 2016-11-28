@@ -3,16 +3,6 @@ package com.zkcd.coolweather.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.zkcd.coolweather.R;
-import com.zkcd.coolweather.db.CoolWeatherDB;
-import com.zkcd.coolweather.model.City;
-import com.zkcd.coolweather.model.County;
-import com.zkcd.coolweather.model.Province;
-import com.zkcd.coolweather.util.HttpCallBackListener;
-import com.zkcd.coolweather.util.HttpUtils;
-import com.zkcd.coolweather.util.Utility;
-import com.zkcd.coolweather.util.ViewUtils;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -26,10 +16,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zkcd.coolweather.R;
+import com.zkcd.coolweather.db.CoolWeatherDB;
+import com.zkcd.coolweather.model.AddressConst;
+import com.zkcd.coolweather.model.City;
+import com.zkcd.coolweather.model.County;
+import com.zkcd.coolweather.model.Province;
+import com.zkcd.coolweather.util.HttpCallBackListener;
+import com.zkcd.coolweather.util.HttpUtils;
+import com.zkcd.coolweather.util.Utility;
+import com.zkcd.coolweather.util.ViewUtils;
+
 public class ChooseAreaActivity extends Activity {
 
-    private static final String ADDRESS_CITY = "http://www.weather.com.cn/data/list3/city";
-    private static final String ADDRESS_SUFFIX = ".xml";
     private static final String TYPE_PROVINCE = "province";
     private static final String TYPE_CITY = "city";
     private static final String TYPE_COUNTY = "county";
@@ -37,7 +36,7 @@ public class ChooseAreaActivity extends Activity {
     private static final int LEVEL_CITY = 1;
     private static final int LEVEL_COUNTY = 2;
     private int currentLevel;
-    
+
     private ListView listView;
     private TextView titleText;
     private ChooseAreaActivity mActivity;
@@ -67,7 +66,6 @@ public class ChooseAreaActivity extends Activity {
         queryProvinces();
         listView.setOnItemClickListener(new OnItemClickListener() {
 
-
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {
@@ -77,6 +75,10 @@ public class ChooseAreaActivity extends Activity {
                 }else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounty();
+                }else if (currentLevel == LEVEL_COUNTY) {
+                    String countyCode = countyList.get(position).getCountyCode();
+                    WeatherActivity.startAction(mActivity, countyCode);
+                    finish();
                 }
             }
         });
@@ -131,16 +133,16 @@ public class ChooseAreaActivity extends Activity {
             queryFromServer(selectedCity.getCityCode(), TYPE_COUNTY);
         }
     }
-    
+
     private void queryFromServer(String code, final String type) {
         String address;
         if (!TextUtils.isEmpty(code)) {
-            address = ADDRESS_CITY+code+ADDRESS_SUFFIX;
+            address = AddressConst.LOCAL_ADDRESS+code+AddressConst.LOCAL_ADDRESS_SUFFIX;
         }else{
-            address = ADDRESS_CITY+ADDRESS_SUFFIX;
+            address = AddressConst.LOCAL_ADDRESS+AddressConst.LOCAL_ADDRESS_SUFFIX;
         }
         showProgressDialog();
-        HttpUtils.sendHttprequest(address, new HttpCallBackListener() {
+        HttpUtils.sendOkHttpUtils(address, new HttpCallBackListener() {
             
             @Override
             public void onFinish(String response) {
@@ -152,7 +154,7 @@ public class ChooseAreaActivity extends Activity {
                 }else if (TYPE_COUNTY.equals(type)) {
                     result = Utility.handlerCountiesResponce(coolWeatherDB, response,selectedCity.getId());
                 }
-                
+
                 if (result) {
                     //通过runOnUiThread方法回到主线程处理逻辑
                     runOnUiThread(new Runnable() {
@@ -170,7 +172,7 @@ public class ChooseAreaActivity extends Activity {
                     });
                 }
             }
-            
+
             @Override
             public void onError(Exception e) {
                 runOnUiThread(new Runnable() {
@@ -198,7 +200,7 @@ public class ChooseAreaActivity extends Activity {
        }
        progressDialog.dismiss();
     }
-        
+
     /**
      * 捕获Back键，根据当前级别确定返回市列表、省列表，还是直接退出
      */

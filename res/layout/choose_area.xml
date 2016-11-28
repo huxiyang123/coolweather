@@ -7,13 +7,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/activity_relative_title_bg" >
+        android:background="@color/relative_weather_info_bg" >
         <TextView 
             android:id="@+id/title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textSize="@dimen/activity_relative_title_size"/>
+            android:textSize="@dimen/textview_size_twentyFour"/>
     </RelativeLayout>
     <ListView 
         android:id="@+id/list_view"

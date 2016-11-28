@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources >
-    <color name="activity_relative_title_bg">#484E61</color>
+    <color name="textview_title_bg">#484E61</color>
+    <color name="relative_weather_info_bg">#27A5F9</color>
 
 </resources>
