@@ -9,7 +9,9 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,7 +22,7 @@ import com.zkcd.coolweather.util.HttpUtils;
 import com.zkcd.coolweather.util.Utility;
 import com.zkcd.coolweather.util.ViewUtils;
 
-public class WeatherActivity extends Activity {
+public class WeatherActivity extends Activity implements OnClickListener {
 
     private static final String COUNTY_CODE = "countyCode";
     private static final String WEATHER_CODE = "weatherCode";
@@ -31,6 +33,9 @@ public class WeatherActivity extends Activity {
     private TextView currentDataText;
     private TextView tempRangeText;
     private TextView weatherDespText;
+    private Button switchCityBtn;
+    private Button refreshWeatherBtn;
+    private SharedPreferences prefs;
     
     public static void startAction(Context context, String countyCode){
         Intent intent = new Intent(context, WeatherActivity.class);
@@ -44,6 +49,7 @@ public class WeatherActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.weather_layout);
+        prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         activity = this;
         initView();
 
@@ -64,6 +70,10 @@ public class WeatherActivity extends Activity {
         tempRangeText = ViewUtils.findViewById(activity, R.id.temp_range);
         currentDataText = ViewUtils.findViewById(activity, R.id.current_data);
         weatherDespText = ViewUtils.findViewById(activity, R.id.weather_desp);
+        switchCityBtn = ViewUtils.findViewById(activity, R.id.switch_city);
+        refreshWeatherBtn = ViewUtils.findViewById(activity, R.id.refresh_weather);
+        switchCityBtn.setOnClickListener(this);
+        refreshWeatherBtn.setOnClickListener(this);
     }
 //接口有问题    只有辽宁--锦州（里面的个别可以请求导数据）
     private void queryWeatherCode(String countyCode) {
@@ -133,7 +143,7 @@ public class WeatherActivity extends Activity {
 
     private void showWeatherInfo() {
         Log.d("huxiyang22222", "showWeatherInfo ");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        
         cityNameText.setText(prefs.getString(AddressConst.PREF_CITY_NAME, ""));
         publishText.setText("今天 "+prefs.getString(AddressConst.PREF_PUBLISH_TIME, "")+" 发布");
         currentDataText.setText(prefs.getString(AddressConst.PREF_CURRENT_DATE, ""));
@@ -142,5 +152,26 @@ public class WeatherActivity extends Activity {
 
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+        case R.id.switch_city:
+            Intent intent = new Intent(activity,ChooseAreaActivity.class);
+            intent.putExtra(AddressConst.FROM_WEATHER_ACTIVITY, true);
+            startActivity(intent);
+            finish();
+            break;
+        case R.id.refresh_weather:
+            String weatherCode = prefs.getString(AddressConst.PREF_WEATHER_CODE, "");
+            if (!TextUtils.isEmpty(weatherCode)) {
+                publishText.setText("同步中。。。");
+                queryWeatherInfo(weatherCode); 
+            }
+            break;
+        default:
+            break;
+        }
     }
 }

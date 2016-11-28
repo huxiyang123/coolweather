@@ -5,7 +5,10 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -49,14 +52,24 @@ public class ChooseAreaActivity extends Activity {
     private List<City> cityList;
     protected City selectedCity;
     private List<County> countyList;
+    boolean isFromWeatherActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
+        mActivity =this;
+        isFromWeatherActivity = getIntent().getBooleanExtra(AddressConst.FROM_WEATHER_ACTIVITY, false);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
+        //已经选择了城市且不是从WeatherActivity跳转过来的，才会直接跳转到WeatherActivity
+        if(prefs.getBoolean(AddressConst.PREF_CITY_SELECTED, false)
+                &&!isFromWeatherActivity){
+            startActivity(new Intent(mActivity,WeatherActivity.class));
+            finish();
+            return;
+        }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.choose_area);
-        mActivity =this;
         listView = ViewUtils.findViewById(mActivity, R.id.list_view);
         titleText = ViewUtils.findViewById(mActivity, R.id.title_text);
         adapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_list_item_1, dataList);
@@ -211,6 +224,9 @@ public class ChooseAreaActivity extends Activity {
         }else if (currentLevel == LEVEL_CITY) {
             queryProvinces();
         }else{
+            if (isFromWeatherActivity) {
+                startActivity(new Intent(mActivity, WeatherActivity.class));
+            }
             finish();
         }
     }

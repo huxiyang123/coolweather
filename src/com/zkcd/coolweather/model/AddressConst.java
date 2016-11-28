@@ -14,4 +14,5 @@ public class AddressConst {
     public static final String PREF_WEATHER_DESP = "weather_desp";
     public static final String PREF_PUBLISH_TIME = "publish_time";
     public static final String PREF_CURRENT_DATE = "current_date";
+    public static final String FROM_WEATHER_ACTIVITY = "from_weather_activity";
 }
