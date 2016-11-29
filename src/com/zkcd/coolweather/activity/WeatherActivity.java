@@ -14,6 +14,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zkcd.coolweather.R;
 import com.zkcd.coolweather.model.Const;
@@ -25,8 +26,10 @@ import com.zkcd.coolweather.util.ViewUtils;
 
 public class WeatherActivity extends Activity implements OnClickListener {
 
+    private static final String TAG = "WeatherActivity";
     private static final String COUNTY_CODE = "countyCode";
     private static final String WEATHER_CODE = "weatherCode";
+    private static final int EXIT_SPACE_TIME = 2000;
     private WeatherActivity activity;
     private LinearLayout weatherInfoLayout;
     private TextView cityNameText;
@@ -37,8 +40,10 @@ public class WeatherActivity extends Activity implements OnClickListener {
     private Button switchCityBtn;
     private Button refreshWeatherBtn;
     private SharedPreferences prefs;
+    private long exitTime = 0;
     
     public static void startAction(Context context, String countyCode){
+        PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit();
         Intent intent = new Intent(context, WeatherActivity.class);
         intent.putExtra(COUNTY_CODE, countyCode);
         context.startActivity(intent);
@@ -50,16 +55,14 @@ public class WeatherActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.weather_layout);
-        prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        Log.d(TAG, "onCreate start");
         activity = this;
+        prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         initView();
-
         String countyCode = getIntent().getStringExtra(COUNTY_CODE);
-        Log.d("huxiyang22222", "onCreate  countyCode "+countyCode);
         if (!TextUtils.isEmpty(countyCode)) {
-            publishText.setText("同步中。。。");
-            cityNameText.setVisibility(View.INVISIBLE);
             weatherInfoLayout.setVisibility(View.INVISIBLE);
+            publishText.setText("同步中。。。");
             queryWeatherCode(countyCode);
         }
     }
@@ -76,6 +79,14 @@ public class WeatherActivity extends Activity implements OnClickListener {
         switchCityBtn.setOnClickListener(this);
         refreshWeatherBtn.setOnClickListener(this);
     }
+
+    @Override
+    protected void onStart() {
+        // TODO Auto-generated method stub
+        super.onStart();
+        showWeatherInfo();
+    }
+
 //接口有问题    只有辽宁--锦州（里面的个别可以请求导数据）
     private void queryWeatherCode(String countyCode) {
         String address = Const.LOCAL_ADDRESS+countyCode+Const.LOCAL_ADDRESS_SUFFIX;
@@ -85,14 +96,12 @@ public class WeatherActivity extends Activity implements OnClickListener {
 
     private void queryFormServer(String address, final String type) {
         HttpUtils.sendHttprequest(address, new HttpCallBackListener() {
-            
+
             @Override
             public void onFinish(String response) {
-                Log.d("huxiyang22222", " queryFormServer  response "+response);
                 if (COUNTY_CODE.equals(type)) {
                     String[] split = response.split("\\|");
                     if (split!=null&&split.length==2) {
-                        Log.d("huxiyang22222", " queryFormServer  split[1] "+split[1]);
                         queryWeatherInfo(split[1]);
                     }
                 }else if (WEATHER_CODE.equals(type)) {
@@ -107,9 +116,10 @@ public class WeatherActivity extends Activity implements OnClickListener {
 
             @Override
             public void onError(Exception e) {
-                
+
                 runOnUiThread(new Runnable() {
                     public void run() {
+                        prefs.edit().clear().commit();
                         publishText.setText("同步数据失败。。");
                     }
                 });
@@ -119,13 +129,11 @@ public class WeatherActivity extends Activity implements OnClickListener {
 
     private void queryWeatherInfo(String weatherInfoCode) {
         String weatherAddress = Const.WEATHER_ADDRESS+weatherInfoCode+Const.WEATHER_ADDRESS_SUFFIX;
-        Log.d("huxiyang22222", "weatherAddress "+weatherAddress);
         queryFormServer(weatherAddress, WEATHER_CODE);
 //        HttpUtils.sendOkHttpUtils(weatherAddress, new HttpCallBackListener() {
-//            
+//
 //            @Override
 //            public void onFinish(String response) {
-//                Log.d("huxiyang22222", " sendOkHttpUtils  onFinish response "+response);
 //                Utility.handleWeatherResponse(activity, response);
 //                runOnUiThread(new Runnable() {
 //                    public void run() {
@@ -133,26 +141,28 @@ public class WeatherActivity extends Activity implements OnClickListener {
 //                    }
 //                });
 //            }
-//            
+//
 //            @Override
 //            public void onError(Exception e) {
 //                // TODO Auto-generated method stub
-//                
 //            }
 //        });
     }
 
     private void showWeatherInfo() {
-        Log.d("huxiyang22222", "showWeatherInfo ");
-        
-        cityNameText.setText(prefs.getString(Const.PREF_CITY_NAME, ""));
-        publishText.setText("今天 "+prefs.getString(Const.PREF_PUBLISH_TIME, "")+" 发布");
-        currentDataText.setText(prefs.getString(Const.PREF_CURRENT_DATE, ""));
-        weatherDespText.setText(prefs.getString(Const.PREF_WEATHER_DESP, ""));
-        tempRangeText.setText(prefs.getString(Const.PREF_TEMP_1, "")+" ~ "+prefs.getString(Const.PREF_TEMP_2, ""));
+        String cityName = prefs.getString(Const.PREF_CITY_NAME, "");
+        if (TextUtils.isEmpty(cityName)) {
+            weatherInfoLayout.setVisibility(View.INVISIBLE);
+            publishText.setText("同步数据失败。。");
+        }else{
+            cityNameText.setText(prefs.getString(Const.PREF_CITY_NAME, ""));
+            publishText.setText("今天 "+prefs.getString(Const.PREF_PUBLISH_TIME, "")+" 发布");
+            currentDataText.setText(prefs.getString(Const.PREF_CURRENT_DATE, ""));
+            weatherDespText.setText(prefs.getString(Const.PREF_WEATHER_DESP, ""));
+            tempRangeText.setText(prefs.getString(Const.PREF_TEMP_1, "")+" ~ "+prefs.getString(Const.PREF_TEMP_2, ""));
+            weatherInfoLayout.setVisibility(View.VISIBLE);
+        }
 
-        weatherInfoLayout.setVisibility(View.VISIBLE);
-        cityNameText.setVisibility(View.VISIBLE);
         Intent intent = new Intent(activity, AutoUpdateService.class);
         startService(intent);
     }
@@ -175,6 +185,17 @@ public class WeatherActivity extends Activity implements OnClickListener {
             break;
         default:
             break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis()-exitTime > EXIT_SPACE_TIME) {
+            Toast.makeText(activity, "再按一次退出。。", Toast.LENGTH_SHORT).show();
+            exitTime   = System.currentTimeMillis();
+        }else {
+            finish();
+            System.exit(0);
         }
     }
 }

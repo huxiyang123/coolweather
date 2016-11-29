@@ -1,11 +1,5 @@
 package com.zkcd.coolweather.service;
 
-import com.zkcd.coolweather.model.Const;
-import com.zkcd.coolweather.receiver.AutoUpdateReceiver;
-import com.zkcd.coolweather.util.HttpCallBackListener;
-import com.zkcd.coolweather.util.HttpUtils;
-import com.zkcd.coolweather.util.Utility;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -14,13 +8,28 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.zkcd.coolweather.model.Const;
+import com.zkcd.coolweather.receiver.AutoUpdateReceiver;
+import com.zkcd.coolweather.util.HttpCallBackListener;
+import com.zkcd.coolweather.util.HttpUtils;
+import com.zkcd.coolweather.util.Utility;
 
 public class AutoUpdateService extends Service {
+    private static final String TAG = "AutoUpdateService";
 
     @Override
     public IBinder onBind(Intent intent) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void onCreate() {
+        // TODO Auto-generated method stub
+        super.onCreate();
+        Log.d(TAG, "onCreate start");
     }
 
     @Override
@@ -32,7 +41,7 @@ public class AutoUpdateService extends Service {
                 updateWeather();
             }
         }).start();
-        
+
         //定时任务
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         int anHour = 8*60*60*1000; //这是8小时的毫秒数,即8小时更新一次
@@ -49,7 +58,7 @@ public class AutoUpdateService extends Service {
         String weatherCode = prefs.getString(Const.PREF_WEATHER_CODE, "");
         String address = Const.WEATHER_ADDRESS+weatherCode+Const.WEATHER_ADDRESS_SUFFIX;
         HttpUtils.sendHttprequest(address, new HttpCallBackListener() {
-            
+
             @Override
             public void onFinish(String response) {
                 Utility.handleWeatherResponse(AutoUpdateService.this, response);

@@ -7,14 +7,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:gravity="center_vertical"
         android:background="@color/textview_title_bg" >
         <Button 
             android:id="@+id/switch_city"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
             android:background="@drawable/ic_back"/>
 
         <TextView
@@ -25,10 +25,11 @@
             android:textSize="@dimen/textview_size_twentyFour" />
         <Button 
             android:id="@+id/refresh_weather"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"
             android:background="@drawable/ic_sync_green_holo"
             />
     </RelativeLayout>
@@ -58,7 +59,7 @@
             <TextView
                 android:id="@+id/current_data"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="60dp"
                 android:gravity="center"
                 android:textSize="@dimen/textview_size_forty" />
 

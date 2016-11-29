@@ -20,6 +20,8 @@ import com.zkcd.coolweather.model.County;
 import com.zkcd.coolweather.model.Province;
 
 public class Utility {
+
+    private static final String TAG = "Utility";
     /**
      * 解析处理服务器返回的省级数据
      * 
@@ -88,20 +90,15 @@ public class Utility {
      * @param response
      */
     public static void handleWeatherResponse(Context context, String response){
-        Log.d("huxiyang22222", "handleWeatherResponse "+response);
         try {
             JSONObject jsonObject = new JSONObject(response);
-            Log.d("huxiyang22222", "cityName 11111111");
             JSONObject weatherInfo = jsonObject.getJSONObject("weatherinfo");
-            Log.d("huxiyang22222", "cityName 22222");
             String cityName = weatherInfo.getString("city");
-            Log.d("huxiyang22222", "cityName "+cityName);
             String weatherCode = weatherInfo.getString("cityid");
             String temp1 = weatherInfo.getString("temp1");
             String temp2 = weatherInfo.getString("temp2");
             String weatherDesp = weatherInfo.getString("weather");
             String publishTime = weatherInfo.getString("ptime");
-            Log.d("huxiyang22222", "publishTime "+publishTime);
             saveWeatherInfo(context, cityName, weatherCode, temp1, temp2, weatherDesp, publishTime);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -131,7 +128,6 @@ public class Utility {
         edit.putString(Const.PREF_TEMP_2, temp2);
         edit.putString(Const.PREF_WEATHER_DESP, weatherDesp);
         edit.putString(Const.PREF_PUBLISH_TIME, publishTime);
-        Log.d("huxiyang22222", "Utility saveWeatherInfo new Date() "+new Date()+" dateFormat.format(new Date()) "+dateFormat.format(new Date()));
         edit.putString(Const.PREF_CURRENT_DATE, dateFormat.format(new Date()));
         edit.commit();
     }

@@ -156,7 +156,7 @@ public class ChooseAreaActivity extends Activity {
         }
         showProgressDialog();
         HttpUtils.sendOkHttpUtils(address, new HttpCallBackListener() {
-            
+
             @Override
             public void onFinish(String response) {
                 boolean result = false;
@@ -181,7 +181,6 @@ public class ChooseAreaActivity extends Activity {
                                 queryCounty();
                             }
                         }
-
                     });
                 }
             }

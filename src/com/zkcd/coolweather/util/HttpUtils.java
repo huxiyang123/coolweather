@@ -45,7 +45,6 @@ public class HttpUtils {
                         while ((line = br.readLine()) != null) {
                             response.append(line);
                         }
-                        Log.d("huxiyang22222", " response "+response.toString());
                         if (listener!=null) {
                             listener.onFinish(response.toString());
                         }
@@ -89,7 +88,6 @@ public class HttpUtils {
 
     public static void sendOkHttpUtils(final String address,
             final HttpCallBackListener listener) {
-        Log.d("huxiyang22222", " sendOkHttpUtils  start address "+ address);
         OkHttpClient okHttpClient = new OkHttpClient();
         Call call = okHttpClient.newCall(new Request.Builder().url(address).build());
         call.enqueue(new Callback() {
@@ -97,7 +95,6 @@ public class HttpUtils {
             @Override
             public void onResponse(Response response) throws IOException {
                 String string = response.body().string();// response.body().string() 这里只能回调一次，所以想多次使用它，将其复制给一个变量，之后就可以重复使用了
-                Log.d("huxiyang22222", " sendOkHttpUtils  okHttpClient onResponse "+ response+" arg0.body().string() "+string);
                 if (listener!=null) {
                     listener.onFinish(string);
                 }
@@ -105,7 +102,6 @@ public class HttpUtils {
 
             @Override
             public void onFailure(Request arg0, IOException arg1) {
-                Log.d("huxiyang22222", " httpUtils  onFailure "+ arg1);
                 if (listener!=null) {
                     listener.onError(arg1);
                 }
