@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.zkcd.coolweather.R;
 import com.zkcd.coolweather.db.CoolWeatherDB;
-import com.zkcd.coolweather.model.AddressConst;
+import com.zkcd.coolweather.model.Const;
 import com.zkcd.coolweather.model.City;
 import com.zkcd.coolweather.model.County;
 import com.zkcd.coolweather.model.Province;
@@ -59,10 +59,10 @@ public class ChooseAreaActivity extends Activity {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         mActivity =this;
-        isFromWeatherActivity = getIntent().getBooleanExtra(AddressConst.FROM_WEATHER_ACTIVITY, false);
+        isFromWeatherActivity = getIntent().getBooleanExtra(Const.FROM_WEATHER_ACTIVITY, false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
         //已经选择了城市且不是从WeatherActivity跳转过来的，才会直接跳转到WeatherActivity
-        if(prefs.getBoolean(AddressConst.PREF_CITY_SELECTED, false)
+        if(prefs.getBoolean(Const.PREF_CITY_SELECTED, false)
                 &&!isFromWeatherActivity){
             startActivity(new Intent(mActivity,WeatherActivity.class));
             finish();
@@ -150,9 +150,9 @@ public class ChooseAreaActivity extends Activity {
     private void queryFromServer(String code, final String type) {
         String address;
         if (!TextUtils.isEmpty(code)) {
-            address = AddressConst.LOCAL_ADDRESS+code+AddressConst.LOCAL_ADDRESS_SUFFIX;
+            address = Const.LOCAL_ADDRESS+code+Const.LOCAL_ADDRESS_SUFFIX;
         }else{
-            address = AddressConst.LOCAL_ADDRESS+AddressConst.LOCAL_ADDRESS_SUFFIX;
+            address = Const.LOCAL_ADDRESS+Const.LOCAL_ADDRESS_SUFFIX;
         }
         showProgressDialog();
         HttpUtils.sendOkHttpUtils(address, new HttpCallBackListener() {

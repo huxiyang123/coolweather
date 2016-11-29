@@ -1,6 +1,6 @@
 package com.zkcd.coolweather.model;
 
-public class AddressConst {
+public class Const {
 
     public static final String WEATHER_ADDRESS = "http://www.weather.com.cn/data/cityinfo/";
     public static final String WEATHER_ADDRESS_SUFFIX  = ".html";

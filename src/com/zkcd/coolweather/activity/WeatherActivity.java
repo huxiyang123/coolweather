@@ -16,7 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.zkcd.coolweather.R;
-import com.zkcd.coolweather.model.AddressConst;
+import com.zkcd.coolweather.model.Const;
+import com.zkcd.coolweather.service.AutoUpdateService;
 import com.zkcd.coolweather.util.HttpCallBackListener;
 import com.zkcd.coolweather.util.HttpUtils;
 import com.zkcd.coolweather.util.Utility;
@@ -77,7 +78,7 @@ public class WeatherActivity extends Activity implements OnClickListener {
     }
 //接口有问题    只有辽宁--锦州（里面的个别可以请求导数据）
     private void queryWeatherCode(String countyCode) {
-        String address = AddressConst.LOCAL_ADDRESS+countyCode+AddressConst.LOCAL_ADDRESS_SUFFIX;
+        String address = Const.LOCAL_ADDRESS+countyCode+Const.LOCAL_ADDRESS_SUFFIX;
         queryFormServer(address, COUNTY_CODE);
         
     }
@@ -117,7 +118,7 @@ public class WeatherActivity extends Activity implements OnClickListener {
     }
 
     private void queryWeatherInfo(String weatherInfoCode) {
-        String weatherAddress = AddressConst.WEATHER_ADDRESS+weatherInfoCode+AddressConst.WEATHER_ADDRESS_SUFFIX;
+        String weatherAddress = Const.WEATHER_ADDRESS+weatherInfoCode+Const.WEATHER_ADDRESS_SUFFIX;
         Log.d("huxiyang22222", "weatherAddress "+weatherAddress);
         queryFormServer(weatherAddress, WEATHER_CODE);
 //        HttpUtils.sendOkHttpUtils(weatherAddress, new HttpCallBackListener() {
@@ -144,14 +145,16 @@ public class WeatherActivity extends Activity implements OnClickListener {
     private void showWeatherInfo() {
         Log.d("huxiyang22222", "showWeatherInfo ");
         
-        cityNameText.setText(prefs.getString(AddressConst.PREF_CITY_NAME, ""));
-        publishText.setText("今天 "+prefs.getString(AddressConst.PREF_PUBLISH_TIME, "")+" 发布");
-        currentDataText.setText(prefs.getString(AddressConst.PREF_CURRENT_DATE, ""));
-        weatherDespText.setText(prefs.getString(AddressConst.PREF_WEATHER_DESP, ""));
-        tempRangeText.setText(prefs.getString(AddressConst.PREF_TEMP_1, "")+" ~ "+prefs.getString(AddressConst.PREF_TEMP_2, ""));
+        cityNameText.setText(prefs.getString(Const.PREF_CITY_NAME, ""));
+        publishText.setText("今天 "+prefs.getString(Const.PREF_PUBLISH_TIME, "")+" 发布");
+        currentDataText.setText(prefs.getString(Const.PREF_CURRENT_DATE, ""));
+        weatherDespText.setText(prefs.getString(Const.PREF_WEATHER_DESP, ""));
+        tempRangeText.setText(prefs.getString(Const.PREF_TEMP_1, "")+" ~ "+prefs.getString(Const.PREF_TEMP_2, ""));
 
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(activity, AutoUpdateService.class);
+        startService(intent);
     }
 
     @Override
@@ -159,12 +162,12 @@ public class WeatherActivity extends Activity implements OnClickListener {
         switch (v.getId()) {
         case R.id.switch_city:
             Intent intent = new Intent(activity,ChooseAreaActivity.class);
-            intent.putExtra(AddressConst.FROM_WEATHER_ACTIVITY, true);
+            intent.putExtra(Const.FROM_WEATHER_ACTIVITY, true);
             startActivity(intent);
             finish();
             break;
         case R.id.refresh_weather:
-            String weatherCode = prefs.getString(AddressConst.PREF_WEATHER_CODE, "");
+            String weatherCode = prefs.getString(Const.PREF_WEATHER_CODE, "");
             if (!TextUtils.isEmpty(weatherCode)) {
                 publishText.setText("同步中。。。");
                 queryWeatherInfo(weatherCode); 
